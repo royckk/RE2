@@ -1,33 +1,35 @@
-# deploy.ps1 - 简化版下载运行脚本
-# 警告：此脚本无安全验证，请确保您完全信任目标文件。
+# 极简下载运行脚本 (无验证版) - 带自动关闭
+# 注意：此脚本跳过安全验证，请确保您完全信任 down.exe 的来源。
 
-# 用户配置区（请修改这里）
-$原始文件链接 = "https://raw.githubusercontent.com/royckk/RE2/main/down.exe"
-$加速站域名 = "https://g.110777.xyz/"
-$本地文件名 = "down_$([Guid]::NewGuid().ToString(“N”)).exe" # 使用GUID避免重名
+# 1. 定义原始文件地址和加速站前缀
+$原始链接 = "https://raw.githubusercontent.com/royckk/RE2/main/down.exe"
+$加速站前缀 = "https://g.110777.xyz/"
 
-# 主逻辑
-$加速后链接 = $加速站域名 + $原始文件链接
-$本地完整路径 = Join-Path $env:TEMP $本地文件名
-
+# 2. 组合成加速后的链接
+$加速链接 = $加速站前缀 + $原始链接
 Write-Host “正在通过加速站下载...” -ForegroundColor Cyan
-Write-Host “目标链接: $加速后链接”
+Write-Host “加速链接: $加速链接”
 
+# 3. 定义本地临时文件路径
+$本地路径 = “$env:TEMP\down.exe”
+
+# 4. 下载文件
 try {
-    # 1. 设置安全协议并下载
     [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
-    Invoke-WebRequest -Uri $加速后链接 -OutFile $本地完整路径 -UseBasicParsing
-    Write-Host “下载成功: $本地完整路径” -ForegroundColor Green
-
-    # 2. 直接运行（跳过哈希验证）
-    Write-Host “正在启动程序...” -ForegroundColor Cyan
-    & $本地完整路径
-    Write-Host “程序已启动。” -ForegroundColor Green
-
+    Invoke-WebRequest -Uri $加速链接 -OutFile $本地路径 -UseBasicParsing
+    Write-Host “文件下载完成: $本地路径” -ForegroundColor Green
 } catch {
-    Write-Host “操作失败: $($_.Exception.Message)” -ForegroundColor Red
-    exit 1
+    Write-Host “下载失败: $($_.Exception.Message)” -ForegroundColor Red
+    exit 1 # 下载失败，退出并返回错误代码1
 }
 
-# 提示：根据您的需求决定是否保留文件
-# Write-Host “如需清理，请手动删除: $本地完整路径”
+# 5. 运行下载的程序并自动关闭窗口
+Write-Host “正在启动程序...” -ForegroundColor Cyan
+try {
+    & $本地路径
+    Write-Host “程序已启动，正在关闭PowerShell窗口。” -ForegroundColor Green
+    exit 0 # 核心修改：成功启动后，退出PowerShell
+} catch {
+    Write-Host “启动程序时出错: $($_.Exception.Message)” -ForegroundColor Red
+    exit 1 # 启动失败，也退出
+}
